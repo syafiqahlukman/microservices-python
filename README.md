@@ -1,5 +1,20 @@
-## Microservice Architecture and System Design with Python & Kubernetes
+## Key Concepts
 
-This repository refers to the [freeCodeCamp.org](https://www.freecodecamp.org/) hands-on tutorial about microservices architecture and distributed systems using Python, Kubernetes, RabbitMQ, MongoDB, and MySQL.
+**Microservices Architecture:**
+ - A design approach where an application is composed of small, independent services that communicate over a network.
 
-Watch the [YouTube video](https://www.youtube.com/watch?v=hmkF77F9TLw) for more information.
+**Python:**
+ - The primary programming language used to develop the microservices.
+
+**Kubernetes:**
+ - Manages the deployment and scaling of your microservices.
+
+**RabbitMQ:**
+ - Facilitates communication between microservices.
+ 
+**MongoDB:**
+- Database. Stores data in a flexible, JSON-like format.
+
+**MySQL:**
+- Stores structured data with relationships between tables.
+
