@@ -89,8 +89,11 @@ if __name__ == "__main__":
     #This line checks if the script is being run directly. When this script is run directly, __name__ is set to "__main__". 
     #When the script is imported as a module, __name__ is set to the name of the script/module.
     server.run(host="0.0.0.0", port=5000) #whenever we run our program, we want our server to start
-    #0.0.0.0 makes the server accessible externally, not just on localhost. 
-    #port=5000 specifies the port number on which the server will listen for incoming requests. 5000 is the default for     mysql -u root -p < init.sql    mysql -u root -p < init.sql    mysql -u root -p < init.sql    mysql -u root -p < init.sqlFlask 
+    # The host configuration in Flask determines which IP addresses the application will listen on.
+    # Setting the host to 0.0.0.0 tells Flask to listen on all available IP addresses of the Docker container, including localhost and any other IP addresses assigned by Docker networks.
+    # If not configured, Flask defaults to listening on localhost, which is only accessible from within the container and not from external sources.
+    # If the Docker container is connected to multiple Docker networks, it will have multiple IP addresses. The 0.0.0.0 configuration ensures Flask listens on all of them.
+    # Port=5000 specifies the port number on which the server will listen for incoming requests. 5000 is the default for Flask applications
 
 
 '''
