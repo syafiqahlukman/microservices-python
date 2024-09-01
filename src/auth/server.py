@@ -90,7 +90,7 @@ if __name__ == "__main__":
     #When the script is imported as a module, __name__ is set to the name of the script/module.
     server.run(host="0.0.0.0", port=5000) #whenever we run our program, we want our server to start
     #0.0.0.0 makes the server accessible externally, not just on localhost. 
-    #port=5000 specifies the port number on which the server will listen for incoming requests. 5000 is the default for Flask 
+    #port=5000 specifies the port number on which the server will listen for incoming requests. 5000 is the default for     mysql -u root -p < init.sql    mysql -u root -p < init.sql    mysql -u root -p < init.sql    mysql -u root -p < init.sqlFlask 
 
 
 '''
