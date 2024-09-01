@@ -23,8 +23,6 @@ EXPOSE 5000
 
 CMD ["python3", "server.py"]
 #same as when we're actually running this python3 server.py from the command line.
-
-
 #The goal is to deploy all services within a Kubernetes cluster.
 #Docker images are created and pushed to a repository.
 #Kubernetes pulls these Docker images from the repository to create deployments within the cluster.
@@ -33,3 +31,8 @@ CMD ["python3", "server.py"]
 #That means that the next instruction's image layer will be built on top of the previous instruction's image layer. 
 #If a file changes, Docker will rebuild the layer that includes this file.
 #Docker will also rebuild any layers that come after this changed layer.
+
+#make sure to create the requirements.txt using the command pip freeze > requirements.txt
+#the requirements.txt and server.py file need to be in the same directory as the Dockerfile
+
+#then, to build this dockerfile, run the command "docker build ." in the same directory as the Dockerfile:
