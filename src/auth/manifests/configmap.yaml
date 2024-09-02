@@ -1,3 +1,5 @@
+#this file sets the environment variables within our container
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
