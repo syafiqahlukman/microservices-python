@@ -10,6 +10,21 @@ This microservice has two main endpoints, login and validate
 /login endpoint handles user login by verifying credentials.
 /validate endpoint validates the JWT included in subsequent requests.
 
+## Use case scenario
+
+As an end user, when you log in to an application, you provide your username and password. 
+When you login to the application, your browser sends a POST request to /login with your credentials.
+
+The API gateway receives the request and routes it to the authentication microservice.
+The authentication microservice connects to the MySQL database, checks the credentials against the database.
+
+If credentials are valid, the microservice generates a JWT, then returns the JWT to the API gateway, and then to the client's browser
+
+After logging in, the application gives you a token (JWT) behind the scenes. You don’t see this token, but it’s stored in your browser.
+
+Your browser includes the JWT in subsequent requests to the server. So that when you navigate the application (e.g., uploading a file, viewing your profile), the server uses this token to verify your identity and permissions.
+
+The server checks the token to see what you are allowed to do. For example, if you have admin privileges, you might see additional options or features.
 
 **Python:**
  - The primary programming language used to develop the microservices.
@@ -47,18 +62,23 @@ By default, Kubernetes clusters are designed to be secure and isolated from exte
 The API gateway routes requests to the appropriate microservices within the cluster and manage external access is typically managed through specific end points for example /login /validate /upload 
 
 
-## Use case scenario
+**manifest directory**
+- Contains all the Kubernetes configuration files needed for the deployment of auth service
+- These configuration files in the this directory are used to pull the Docker image from the repository and deploy it to the Kubernetes cluster.
+- These files include:
+    - auth-deploy.yaml: Defines the deployment for the auth service, specifying the number of replicas, the Docker image to use, and environment variables.
+    - configmap.yaml: Defines a ConfigMap for non-sensitive environment variables, such as database host, user, and port.
+    - secret.yaml: Defines a Secret for sensitive data like passwords and JWT secrets.
+    - service.yaml: Defines a Service to expose the auth deployment within the Kubernetes cluster, specifying the ports and type of service
 
-As an end user, when you log in to an application, you provide your username and password. 
-When you login to the application, your browser sends a POST request to /login with your credentials.
+**Deployment Process**
+- The auth service is implemented in server.py that contains the logic for handling authentication.
+- A Dockerfile is created to build the server.py script into a Docker image, the image is then pushed to a Docker repository.
+- When the Kubernetes configuration files are applied using kubectl apply -f ./ (make sure minikube is started), they interface with the Kubernetes API and manage the resources defined in the configuration files.
+- The Docker image containing the auth service code is pullk9sed from the repository and deployed to the cluster.
+- The Kubernetes API creates the necessary resources (e.g., pods, services) based on the configuration files.
+- The Kubernetes API manages the resources in the cluster, such as deployments, services, ConfigMaps, and Secrets.
 
-The API gateway receives the request and routes it to the authentication microservice.
-The authentication microservice connects to the MySQL database, checks the credentials against the database.
 
-If credentials are valid, the microservice generates a JWT, then returns the JWT to the API gateway, and then to the client's browser
 
-After logging in, the application gives you a token (JWT) behind the scenes. You don’t see this token, but it’s stored in your browser.
 
-Your browser includes the JWT in subsequent requests to the server. So that when you navigate the application (e.g., uploading a file, viewing your profile), the server uses this token to verify your identity and permissions.
-
-The server checks the token to see what you are allowed to do. For example, if you have admin privileges, you might see additional options or features.
