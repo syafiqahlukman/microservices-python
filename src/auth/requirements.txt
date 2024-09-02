@@ -51,3 +51,8 @@ urllib3==2.2.2
 wcwidth==0.2.13
 webencodings==0.5.1
 yarg==0.1.9
+Flask==2.0.3
+Werkzeug==2.0.3
+PyJWT==2.9.0
+mysqlclient==2.1.0
+flask_mysqldb==0.2.0
