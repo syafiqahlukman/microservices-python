@@ -30,7 +30,29 @@ The server checks the token to see what you are allowed to do. For example, if y
  - The primary programming language used to develop the microservices.
 
 **Kubernetes:**
- - Manages the deployment and scaling of your microservices.
+- Automates the deployment, scaling, and management of containerized applications.
+- It eliminates manual processes involved in deploying and scaling applications.
+- It ensures the desired number of pods are running. If a pod crashes, Kubernetes automatically replaces it.
+- Scaling up or down is simplified, it handles the deployment and load balancing.
+
+**Kubernetes Objects:**
+- Kubernetes uses objects to represent the state of s cluster. These objects are defined in YAML files and in this project the objects are:
+    - Deployment:
+        - Manages the deployment of the application.
+        - Ensures the specified number of copies (replicas) of the app are running.
+        - Handles updates and scaling (making more or fewer copies)
+
+    - ConfigMap:
+        - Stores configuration data as key-value pairs (like a dictionary).
+        - Injects configuration data into the app without changing the app code.
+
+    - Secret:
+        - Stores sensitive data such as passwords and tokens.
+        - Injects sensitive data into the app securely.
+
+    - Service:
+        - Exposes a set of pods as a network service.
+        - Provides load balancing and service discovery (helps find and distribute traffic to your app).
 
 **RabbitMQ:**
  - Facilitates communication between microservices.
