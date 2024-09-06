@@ -1,29 +1,29 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: apps/v1 #specify the API version
+kind: Deployment #specify the kind of resource/object type (Deployment)
 metadata:
   name: auth
   labels:
     app: auth
-spec:
-  replicas: 2
-  selector:
+spec: #describe the desired state of the resource
+  replicas: 2 #number of pod replicas
+  selector: #match pods with labels app: auth
     matchLabels:
       app: auth
-  strategy:
-    type: RollingUpdate
+  strategy: #rolling update strategy with maxSurge 3
+    type: RollingUpdate #rolling update is a way to update the application without downtime. it gradually replace old pods with new ones
     rollingUpdate:
-      maxSurge: 3
-  template:
+      maxSurge: 3 #allows up to 3 extra pods to be created temporarily during the update
+  template: #pod template. pod is the environment where the app runs. this template defines what the pot should looke like (e.g what containers it should run)
     metadata:
       labels:
         app: auth
-    spec:
+    spec: #container spec
       containers:
         - name: auth
           image: syafiqahlukman/auth
           ports:
             - containerPort: 5000
-          envFrom:
+          envFrom: #environment variables from configMap and secret files
             - configMapRef:
                 name: auth-configmap
             - secretRef:
