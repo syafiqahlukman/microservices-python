@@ -36,23 +36,24 @@ The server checks the token to see what you are allowed to do. For example, if y
 - Scaling up or down is simplified, it handles the deployment and load balancing.
 
 **Kubernetes Objects:**
-- Kubernetes uses objects to represent the state of s cluster. These objects are defined in YAML files and in this project the objects are:
+- Kubernetes uses objects to represent the state of a cluster. These objects are defined in YAML files
+- For each microservice, typically we will have the following kubernetes objects: 
     - Deployment:
-        - Manages the deployment of the application.
-        - Ensures the specified number of copies (replicas) of the app are running.
+        - Manages the deployment of the microservice.
+        - Ensures the specified number of copies (replicas) of the microservice are running.
         - Handles updates and scaling (making more or fewer copies)
 
     - ConfigMap:
         - Stores configuration data as key-value pairs (like a dictionary).
-        - Injects configuration data into the app without changing the app code.
+        - Injects configuration data into the microservice without changing the app code.
 
     - Secret:
         - Stores sensitive data such as passwords and tokens.
-        - Injects sensitive data into the app securely.
+        - Injects sensitive data into the microservice securely.
 
     - Service:
         - Exposes a set of pods as a network service.
-        - Provides load balancing and service discovery (helps find and distribute traffic to your app).
+        - Provides load balancing and service discovery (helps find and distribute traffic to the microservice).
 
 **RabbitMQ:**
  - Facilitates communication between microservices.
