@@ -4,6 +4,32 @@
  - A design approach where an application is composed of small, independent services that communicate over a network.
  - Microservices: Small, independent services running in a Kubernetes cluster.
 
+    **synchronous inter-service communication**
+    - When one service (Gateway) sends a request to another service (Auth), the Gateway service waits until Auth service responds with either a success (JWT) or an error before doing anything else.
+    - This waiting makes the Gateway service "blocked" until it gets a response.
+    - Because the Gateway service has to wait for the Auth service, they are closely connected or tightly coupled
+
+    **asynchronous inter-service communication**
+    - when the Gateway service sends a request, it doesn't wait for a response. It can continue doing other things.
+    - This is called a "non-blocking" request.
+    - When Gateway service sends a message to RabbitMQ to notify the Converter servie that there's a video to process, the Gateway doesnt just wait for the Converter service to finish, it just moves on to handle other requests.
+    - Because the Gateway doesn't wait for the Converter service, they are not closely connected or loosely coupled.
+
+    In our system design:
+        - uploading and converting video services use asynchronous communication to allow the system to handle multiple video uploads and conversions simultaneously without blocking the Gateway service.
+        - authentication service uses synchronous communication to ensure that the Gateway service waits for the Auth service to authenticate the user before allowing them to perform any actions
+
+    **strong consistency**
+    - used in authentication service when gateway service waits for authentication service to verify user before allowing any further action
+    - this ensures that the user's authentication is consistent and up to date
+    - not being used in uploading service because user would have to wait until the conversion is complete before can do anything else
+    - this make our system slow because user have to wait for each video to be processed before can upload another one
+
+    **eventual consistency**
+    - data might not be immediately up-to-date but it will eventually become consistent
+    - when a user uploads a video, Gateway service store the video in MOngoDB and send message to RabbitMQ to notify converter service. Gateway dont wait for the video to be converted before responding to user. So user can upload another video immediately
+    - the conversion happens in the background, and the MP3 file becomes available after some time
+
 **server.py**
 Code for the authentication microservice. 
 This microservice has two main endpoints, login and validate
@@ -57,6 +83,16 @@ The server checks the token to see what you are allowed to do. For example, if y
 
 **RabbitMQ:**
  - Facilitates communication between microservices.
+ - Helps coordinate the tasks of storing the video, converting it to MP3, notifying the user, and finally delivering the MP3 to the user. This ensures that everything happens in the right order and nothing gets missed.
+
+    **How RabbitMQ Fits into the System***
+    1. A user uploads a video to be converted to MP3. The request first goes to the Gateway
+    2. The Gateway stores the video in MongoDB 
+    3. Then, the Gateway sends a message to RabbitMQ notifying that there's a new video to be processed to let other parts of the system know that there's a new task to do.
+    4. The Video to MP3 Converter service gets the message from RabbitMQ. The service takes the video ID from the message, pulls the video from MongoDB, converts it to MP3, and stores the MP3 back in MongoDB.
+    5. After converting the video, the Converter service sends a new message to RabbitMQ notifying that the MP3 conversion is done to let the Notification service know that the conversion is complete.
+    6. Then, the Notification service gets the message from RabbitMQ and sends an email to the user saying, "Your MP3 is ready for download!"
+    7. The user gets a unique ID from the notification email and uses it, along with their JWT (a kind of digital key), to request the MP3 from the Gateway. The Gateway pulls the MP3 from MongoDB and sends it to the user.
  
 **MongoDB:**
 - Database. Stores data in a flexible, JSON-like format.
