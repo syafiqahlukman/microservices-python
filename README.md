@@ -103,8 +103,8 @@ The server checks the token to see what you are allowed to do. For example, if y
 ## Overall Architecture
 
 **API Gateway**
-- The entry point to the application, receiving requests from the client and communicating with internal        services to fulfill those requests (routing requests to appropriate microservices)
-- Defines the functionality of the application, e.g endpoints for login and validating user, uploading files.
+- The entry point to the application, receiving requests from the client and communicating with internal services to fulfill those requests (routing requests to appropriate microservices)
+- Handles routing, authentication, and validation before passing requests to other microservices
 - It receives requests from clients outside the Kubernetes cluster.
 
 **Authentication Microservice**
