@@ -8,21 +8,22 @@ from bson.objectid import ObjectId #bson is a module to work with ObjectId which
 
 server = Flask(__name__) #Initializes a Flask application
 
-mongo_video = PyMongo(server, uri="mongodb://host.minikube.internal:27017/videos") #connects to the mongodb server for storing videos.The mongo_video variable can be used to interact with the videos database (querying, inserting, updating, and deleting documents within that database)
+mongo_video = PyMongo(server, uri="mongodb://host.minikube.internal:27017/videos") #PyMongo library will wrap our Flask server, allowing it to connects to the mongodb server for storing videos.The mongo_video variable can be used to interact with the videos database (querying, inserting, updating, and deleting documents within that database)
 
 mongo_mp3 = PyMongo(server, uri="mongodb://host.minikube.internal:27017/mp3s") #connects to the mongodb server for storing mp3s
 
-fs_videos = gridfs.GridFS(mongo_video.db) #Initializes GridFS for storing large video files.
-fs_mp3s = gridfs.GridFS(mongo_mp3.db) #Initializes GridFS for storing large mp3 files.
+fs_videos = gridfs.GridFS(mongo_video.db) #this sets up GridFS to store large video files in the MOngoDB db. 
+fs_mp3s = gridfs.GridFS(mongo_mp3.db) #this sets up GridFS to store large mp3 files in the MOngoDB db. 
+#MongoDB has a limit on how big a single file can be (16MB). IF a file is bigger than that, GridFS breaks it into smaller chunks and store chunks separately, when u need the file, GridFS puts it all the pieces back together for you
 
-connection = pika.BlockingConnection(pika.ConnectionParameters("rabbitmq")) #connects to the rabbitmq server
-channel = connection.channel() #creates a channel to interact with the rabbitmq server (send and receive messages)
+connection = pika.BlockingConnection(pika.ConnectionParameters("rabbitmq")) #sets up connection to the rabbitmq server
+channel = connection.channel() #creates a channel on the connection to interact with the rabbitmq server (send and receive messages)
 
 
 @server.route("/login", methods=["POST"]) #creating endpoint for login and only accepts POST requests
 def login(): #login function takes the username and password from the request and calls the login function from the auth_svc module
-    token, err = access.login(request) #calls the login function from auth_svc module, to check if the user is authorized to access the gateway
-
+    token, err = access.login(request) #calls the login function from access module (in another folder service), to check if the user is authorized to access the gateway
+ 
     if not err:
         return token
     else:
