@@ -1,4 +1,7 @@
-import os, requests
+#access.py is a module that contain our login function to handle the login request to the auth service
+#a module is a single file that can be imported and used in another file
+
+import os, requests #this requests is different with the one we imported from Flask in the server.py. this request is going to be the module that we use to make HTTP calls to our auth service 
 
 
 def login(request):
