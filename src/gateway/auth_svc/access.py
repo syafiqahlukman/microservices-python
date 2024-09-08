@@ -15,9 +15,11 @@ def login(request): #login function takes the request object as an argument. the
 
     basicAuth = (auth.username, auth.password) #to prepare credentials in a format that can be used in the HTTP request to another service
 
-    response = requests.post( #makes a POST request to send username and password the auth service to check if the user is authorized 
-        f"http://{os.environ.get('AUTH_SVC_ADDRESS')}/login", auth=basicAuth
-    )
+    response = requests.post( #makes a POST request to send username and password to the Auth Service's /login endpoint (auth/server.py) to check if the user is authorized and obtain a token. #This is how the requests module is used to make HTTP calls to the Auth Service.
+        f"http://{os.environ.get('AUTH_SVC_ADDRESS')}/login", auth=basicAuth #get host from the environment using env variable AUTH_SVC_ADDRESS and acces the login endpoint
+    ) #AUTH_SVC_ADDRESS is the environment variable that contains the address of the Auth Service.
+    #os.environ.get('AUTH_SVC_ADDRESS') reads environment variable and get the address
+    #/login is the endpoint that the login function in the Auth Service listens to. Since the Auth Service will be in a different container, the website uses the URL to know exactly where to send the username and password to check if the user is allowed to log in.
 
     if response.status_code == 200: #if the response status code is 200, the login was successful and the token is returned to the client
         return response.text, None
