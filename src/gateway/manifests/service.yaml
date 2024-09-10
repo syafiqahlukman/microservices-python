@@ -1,12 +1,26 @@
 apiVersion: v1
-kind: Service
+kind: Service #service acts like group manager for pods
 metadata:
   name: gateway
 spec:
-  selector:
+  selector: #matches pods with label app: gateway so basically the service groups these Pods using a "label selector', any Pod with the matching label is considered part of that service.
     app: gateway
-  type: ClusterIP
+  type: ClusterIP #Normally, Pods can move or restart, and their IP addresses can change. But with a service, you don’t need to worry about each Pod's individual IP. Instead, you just send requests to the service’s IP, and it handles sending them to the right Pods.
   ports:
-    - port: 8080
-      targetPort: 8080
+    - port: 8080 #gateway service receives the requests on this port
+      targetPort: 8080 #forwards the request to port 8080 of the gateway application. gateway application communicates with other services as needed
       protocol: TCP
+
+#service.yaml exposes the application running in pods to other services within the cluster
+#deployment.yaml is the actual software running inside the pod, perform the actual work
+
+#A Kubernetes Service is an abstraction that defines a logical set of pods and a policy by which to access them.
+
+#Services enable a loose coupling between dependent services, allowing them to scale or change independently.
+#A Service is defined using YAML (Yet Another Markup Language) or JSON (JavaScript Object Notation) format.
+#The Service resource is used to define a set of pods and how to access them.
+#Acts as a way to access multiple copies (or replicas) of your application (which are grouped as Pods) without worrying about where they are exactly running. 
+#It helps to access the app consistently, even when things change behind the scenes
+#IT also helps to load balance the traffic between the pods, so that no single pod gets overwhelmed with requests
+
+#in this case we create the gateway service and we want that service to be able to scale up to multiple ins

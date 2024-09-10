@@ -1,5 +1,5 @@
 apiVersion: networking.k8s.io/v1
-kind: Ingress
+kind: Ingress #different with service that works within the cluster, ingress allows traffic from outside the cluster to reach correct pods inside the cluster
 metadata:
   name: gateway-ingress
   annotations:
@@ -7,15 +7,24 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
     #nginx.ingress.kubernetes.io/proxy-max-temp-file-size: "1024m"
-spec:
-  rules:
-    - host: mp3converter.com
+spec: 
+  rules: #defines the ingress rules. it include the host and path to route traffic to the gateway service
+    - host: mp3converter.com #when user access to mp3converter.com, ingress contoller (nginx) receives the request and checks the ingress rules
       http:
         paths:
-          - path: /
+          - path: / #base URL of host. any request to mp3converter.com or mp3converter.com/anything will be routed to the gateway service
             pathType: Prefix
             backend:
-              service:
-                name: gateway
+              service: #ingress rules specify that requests to the root path should be routed to the gateway service
+                name: gateway #route traffic to the gateway service on port 8080
                 port:
                   number: 8080
+
+
+#this file defines the ingress resource for the gateway service, which is the entry point to the application
+#it manages external access to the services within the kubernetes cluster (http) 
+#by specifying rules for routing external http traffic to the appropriate services based on the host and path
+
+
+#ingress-based routing. an ingress controller (nginx) listens for changes to ingress resources and configures to route traffic accordingly
+#in this case, it route the traffic to the gateway service on port 8080. the gateway pod processes the request and forwards it to the appropriate microservice

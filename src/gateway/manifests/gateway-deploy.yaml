@@ -1,14 +1,14 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: apps/v1 #specifies API version to create deployment
+kind: Deployment 
 metadata:
-  name: gateway
+  name: gateway 
   labels:
     app: gateway
-spec:
-  replicas: 2
+spec: #defines desired state of deployment
+  replicas: 2 #run 2 copies of gateway service at the same time
   selector:
     matchLabels:
-      app: gateway
+      app: gateway #will manage pods with label app: gateway
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -20,9 +20,19 @@ spec:
     spec:
       containers:
         - name: gateway
-          image: sweasytech/gateway
+          image: syafiqahlukman/gateway
           envFrom:
             - configMapRef:
                 name: gateway-configmap
             - secretRef:
                 name: gateway-secret
+
+#defines kubernetes deployment for gateway service
+#specifies the desired state of the deployment
+#run 2 copies of the gateway service at the same time
+#manage pods with label app: gateway
+#rolling update strategy to update the microservice without downtime, it gradually replace old pods with new ones and allows up to 3 extra pods to be created temporarily during the update
+#pod template defines what the pod should look like, in this case, it runs the gateway container with the image syafiqahlukman/gateway and environment variables from configMap and secret files
+#no ports are specified because this service is intended to be internal within the cluster
+#port 80 is exposed to the outside world through the ingress controller
+#in kubernetes deployment, the port within the container specification is used to define which ports the container will listen on, to enable communication between containers within the cluster

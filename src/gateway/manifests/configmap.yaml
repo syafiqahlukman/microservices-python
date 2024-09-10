@@ -3,4 +3,7 @@ kind: ConfigMap
 metadata:
   name: gateway-configmap
 data:
-  AUTH_SVC_ADDRESS: "auth:5000"
+  AUTH_SVC_ADDRESS: "auth:5000" #AUTH_SVC_ADDRESS is label that tells the application where to find the auth service. auth:5000 is the address of auth service within the cluster
+
+#configmap is to store configuration data in key-value pairs
+#not used to define which ports the container will listen so the application reads the configuration data from the configmap to know which ports to use
