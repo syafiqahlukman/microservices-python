@@ -3,7 +3,7 @@ kind: Ingress #different with service that works within the cluster, ingress all
 metadata:
   name: gateway-ingress
   annotations:
-    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0" #to allow any body size in the request
     nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
     #nginx.ingress.kubernetes.io/proxy-max-temp-file-size: "1024m"
