@@ -52,6 +52,7 @@ Your browser includes the JWT in subsequent requests to the server. So that when
 
 The server checks the token to see what you are allowed to do. For example, if you have admin privileges, you might see additional options or features.
 
+
 **Python:**
  - The primary programming language used to develop the microservices.
 
@@ -81,9 +82,64 @@ The server checks the token to see what you are allowed to do. For example, if y
         - Exposes a set of pods as a network service.
         - Provides load balancing and service discovery (helps find and distribute traffic to the microservice).
 
+
 **RabbitMQ:**
  - Facilitates communication between microservices.
  - Helps coordinate the tasks of storing the video, converting it to MP3, notifying the user, and finally delivering the MP3 to the user. This ensures that everything happens in the right order and nothing gets missed.
+
+    **Producer and Exchange**:
+    
+    -   **Producer**: The service that sends messages to RabbitMQ.
+    -   **Exchange**: A middleman that receives messages from the producer and routes them to the appropriate queue.
+
+    **Queues**:
+    
+    -   RabbitMQ can have multiple queues within a single instance.
+    -   For example, you might have a "video" queue and an "MP3" queue.
+
+    **Default Exchange**:
+    
+    -   The default exchange is a direct exchange with no name (empty string).
+    -   Every queue created is automatically bound to the default exchange with a routing key that matches the queue name.
+
+### Message Routing
+
+1.  **Routing Key**:
+    
+    -   The routing key is set to the name of the queue you want the message to go to.
+    -   For example, setting the routing key to "video" will route the message to the "video" queue.
+2.  **Message Publishing**:
+    
+    -   The producer publishes a message to the exchange.
+    -   The exchange routes the message to the correct queue based on the routing key.
+
+### Example Scenario
+
+1.  **Video Upload**:
+    -   When a user uploads a video, the gateway service stores the video and publishes a message to the exchange.
+    -   The exchange routes the message to the "video" queue.
+    -   The consumer (e.g., a video-to-MP3 converter service) processes the message by pulling the video from MongoDB, converting it to MP3, and storing the MP3 in MongoDB.
+
+### Handling Multiple Consumers
+
+1.  **Competing Consumers Pattern**:
+    -   This pattern allows multiple consumers to process messages from the same queue concurrently.
+    -   RabbitMQ uses a round-robin algorithm to distribute messages evenly among consumers.
+
+### Message Persistence
+
+1.  **Durable Queues and Messages**:
+    -   **Durable Queue**: The queue remains even after a RabbitMQ restart.
+    -   **Persistent Messages**: Messages remain in the queue even after a RabbitMQ restart.
+    -   To ensure messages are persisted, set the  `delivery_mode`  to  `pika.spec.PERSISTENT_DELIVERY_MODE`.
+
+### Error Handling
+
+1.  **Deleting Files on Failure**:
+    -   If a message cannot be added to the queue, the file is deleted from MongoDB.
+    -   This prevents stale files from accumulating in the database.
+    -   The function returns an "internal server error" if the message cannot be added to the queue.
+
 
     **How RabbitMQ Fits into the System***
     1. A user uploads a video to be converted to MP3. The request first goes to the Gateway
