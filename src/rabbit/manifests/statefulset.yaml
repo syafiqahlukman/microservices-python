@@ -12,7 +12,7 @@ spec:
       labels:
         app: rabbitmq
     spec:
-      containers:
+      containers: #specify the container that gets spun up 
         - name: rabbitmq
           image: rabbitmq:3-management
           ports:
@@ -27,10 +27,13 @@ spec:
                 name: rabbitmq-configmap
             - secretRef:
                 name: rabbitmq-secret
-          volumeMounts:
-            - mountPath: "/var/lib/rabbitmq"
+          volumeMounts: #mount the storage volume to the container
+            - mountPath: "/var/lib/rabbitmq" #configuring where in our container the storage volume should be mounted because this is where rabbitmq stores the queues
               name: rabbitmq-volume
-      volumes:
+      volumes: #configuration for the storage volume to be mounted to the container
         - name: rabbitmq-volume
-          persistentVolumeClaim:
+          persistentVolumeClaim: #need to create a persistent volume claim to request storage from the storage class. and this configuration here is to call that persistent volume claim rabbitmq-pvc
             claimName: rabbitmq-pvc
+
+#pvc is managed by applications that request specific amount of storage. the pvc is then bind to a pv that meets the request, ensuring that the storage is available to the application
+#WIf no suitable pv exists, Kubernetes can automatically provision a PV that satisfies the claim
