@@ -13,3 +13,5 @@ COPY . /app
 EXPOSE 8080
 
 CMD ["python3", "server.py"]
+
+#should be just the same with auth service dockerfile, just the port is different and the mysql library is not needed
