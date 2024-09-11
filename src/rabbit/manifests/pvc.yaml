@@ -7,5 +7,9 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: 1Gi # minimum amount of storage that the PVC will be allocated
   storageClassName: standard
+
+
+#PVC is a request for storage by a user that can be dynamically provisioned by Kubernetes. 
+#It abstracts the details of how storage is provided, allowing users to request storage without needing to know the specifics of the underlying storage infrastructure.
