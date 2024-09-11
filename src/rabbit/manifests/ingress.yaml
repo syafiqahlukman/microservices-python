@@ -4,7 +4,7 @@ metadata:
   name: rabbitmq-ingress
 spec:
   rules:
-    - host: rabbitmq-manager.com
+    - host: rabbitmq-manager.com #defined domain name to access the service. so we need to configure in etc/host file to map this domain to the IP address of the ingress controller
       http:
         paths:
           - path: /
@@ -14,3 +14,10 @@ spec:
                 name: rabbitmq
                 port:
                   number: 15672
+
+
+#/etc/hosts file is used to manually map domain names to IP addresses on your local machine. 
+#When you enter a domain name (e.g., rabbitmq-manager.com) in your browser, your computer needs to resolve that domain to an IP address to know where to send the request.
+#In a production setup, domain names are resolved via DNS (Domain Name System) to the public IP address of the server hosting the application. 
+#This means you’ll configure your DNS provider (e.g., Cloudflare, GoDaddy, AWS Route 53) to resolve your domain name to the IP address of the Ingress controller or the load balancer.
+#However, in a local development environment, you may not have a DNS server, and the domain name (rabbitmq-manager.com) won't automatically point to the correct IP address.

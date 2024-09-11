@@ -3,15 +3,15 @@ kind: Service
 metadata:
   name: rabbitmq
 spec:
-  type: ClusterIP
+  type: ClusterIP #our service is only going to have internal IP address which is accessible only within the cluster
   selector:
     app: rabbitmq
   ports:
-    - name: http
+    - name: http #port for GUI
       protocol: TCP
-      port: 15672
+      port: 15672 #allow this port from web browser, so need to allow access from outside of the cluser directly to this port so that can access rabbtmq management GUI, so we do ingress.yaml for this port
       targetPort: 15672
-    - name: amqp
+    - name: amqp #port for actual message trannsmision
       protocol: TCP
       port: 5672
       targetPort: 5672

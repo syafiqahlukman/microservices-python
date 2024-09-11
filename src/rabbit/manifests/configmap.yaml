@@ -4,3 +4,6 @@ metadata:
   name: rabbitmq-configmap
 data:
   PLACEHOLDER: "NONE"
+
+
+#we currrently dont need any environment variables but just make a template for future use
