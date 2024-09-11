@@ -14,12 +14,12 @@ spec:
     spec:
       containers: #specify the container that gets spun up 
         - name: rabbitmq
-          image: rabbitmq:3-management
-          ports:
-            - name: http
+          image: rabbitmq:3-management #we're using the one that contains management because we want to have the graphical user interface to manage our queues included in the image
+          ports: #need to include 2 ports, one is to the management GUI and one to handle the actual messages that we send to the queues
+            - name: http #because we are going to use http to access the GUI
               protocol: TCP
               containerPort: 15672
-            - name: amqp
+            - name: amqp #advanced message queuing protocol - ptoocl used to send messages to the queues
               protocol: TCP
               containerPort: 5672
           envFrom:
@@ -28,12 +28,14 @@ spec:
             - secretRef:
                 name: rabbitmq-secret
           volumeMounts: #mount the storage volume to the container
-            - mountPath: "/var/lib/rabbitmq" #configuring where in our container the storage volume should be mounted because this is where rabbitmq stores the queues
+            - mountPath: "/var/lib/rabbitmq" #configuring where in our container the storage volume should be mounted because this is where rabbitmq server stores the queues
               name: rabbitmq-volume
       volumes: #configuration for the storage volume to be mounted to the container
         - name: rabbitmq-volume
           persistentVolumeClaim: #need to create a persistent volume claim to request storage from the storage class. and this configuration here is to call that persistent volume claim rabbitmq-pvc
-            claimName: rabbitmq-pvc
+            claimName: rabbitmq-pvc #which we need to create at pvc.yaml
 
 #pvc is managed by applications that request specific amount of storage. the pvc is then bind to a pv that meets the request, ensuring that the storage is available to the application
 #WIf no suitable pv exists, Kubernetes can automatically provision a PV that satisfies the claim
+
+
