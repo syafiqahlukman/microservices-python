@@ -11,3 +11,5 @@ RUN pip install --no-cache-dir --requirement /app/requirements.txt
 COPY . /app
 
 CMD ["python3", "consumer.py"]
+
+#no need to expose any port as this is a consumer so it will not be accessed by any other service

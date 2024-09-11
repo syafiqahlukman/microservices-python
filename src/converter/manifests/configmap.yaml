@@ -3,5 +3,9 @@ kind: ConfigMap
 metadata:
   name: converter-configmap
 data:
-  MP3_QUEUE: "mp3"
+  MP3_QUEUE: "mp3" #need our MP3_QUEUE name because we're using the environment variable to select the queue. need to be the same as the queue name in the RabbitMQ GUI management
   VIDEO_QUEUE: "video"
+
+
+  #In the application code, the MP3_QUEUE environment variable is accessed to determine the queue name. 
+
