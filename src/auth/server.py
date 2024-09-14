@@ -1,44 +1,32 @@
-'''
-For authentication service. Main job is to handle user login and validate user tokens. 
-uses Flask (a web framework for Python) and MySQL (a database) to manage user data and JSON Web Tokens (JWT) for authentication.
-'''
-
-
-import jwt, datetime, os #libraries for handlong JWT, date & time operations, and accessing environment variable
-from flask import Flask, request #flask web framework & request handling
+import jwt, datetime, os
+from flask import Flask, request
 from flask_mysqldb import MySQL
 
-server = Flask(__name__) #initializes flask application
-mysql = MySQL(server) #setup MySQL database connection for the flask app
+server = Flask(__name__)
+mysql = MySQL(server)
 
 # config
-#where we tell Flask application how to connect to the MySQL database using environment variables
 server.config["MYSQL_HOST"] = os.environ.get("MYSQL_HOST")
 server.config["MYSQL_USER"] = os.environ.get("MYSQL_USER")
 server.config["MYSQL_PASSWORD"] = os.environ.get("MYSQL_PASSWORD")
 server.config["MYSQL_DB"] = os.environ.get("MYSQL_DB")
 server.config["MYSQL_PORT"] = int(os.environ.get("MYSQL_PORT"))
 
-#handles user login and returns a JWT token if the credentials are valid
-@server.route("/login", methods=["POST"]) #when user comes to the /login page (URL), execute login function
-def login(): #function, set of instruction that will be followed when someone comes to the /login page
-    auth = request.authorization #retrieves the authorzation credentials from the request and assigns them to the variable auth.
+
+@server.route("/login", methods=["POST"])
+def login():
+    auth = request.authorization
     if not auth:
         return "missing credentials", 401
 
     # check db for username and password
-    cur = mysql.connection.cursor() #cursor - allows to interact with the database, like a pointer that can move through rows of result set
-    res = cur.execute( #execute sql
+    cur = mysql.connection.cursor()
+    res = cur.execute(
         "SELECT email, password FROM user WHERE email=%s", (auth.username,)
-    ) #query to find the email and password from the user table where the email column matches the provided username
-      #(auth.username,) username provided by user during login. will replace %s in SQL query
-      #the res variable will contain number of rows that match query criteria (number of users found in the db)
+    )
 
-    if res > 0: #means if one or more rows were found that match the query criteria
-        user_row = cur.fetchone() 
-        #when execute SQL query that retrieves data from db, result can contain multiple rows
-        #if call fetchone() multiple times, each call will return the next row in the result set until there are no more rows to retrieve
-        #so this line means it retrieves the first (and the only) row from the result set. Since emails are unique so at most one row.
+    if res > 0:
+        user_row = cur.fetchone()
         email = user_row[0]
         password = user_row[1]
 
@@ -46,21 +34,20 @@ def login(): #function, set of instruction that will be followed when someone co
             return "invalid credentials", 401
         else:
             return createJWT(auth.username, os.environ.get("JWT_SECRET"), True)
-        # calls the createJWT function with arguments: auth.username, secret key used to sign the token and flag indicate the user is authorized.
     else:
         return "invalid credentials", 401
 
 
-@server.route("/validate", methods=["POST"]) #verfiy the validity of JWT
+@server.route("/validate", methods=["POST"])
 def validate():
-    encoded_jwt = request.headers["Authorization"] # Retrieves the Authorization header that contain JWT from the API request
+    encoded_jwt = request.headers["Authorization"]
 
-    if not encoded_jwt: #if the authorization header missing
+    if not encoded_jwt:
         return "missing credentials", 401
 
-    encoded_jwt = encoded_jwt.split(" ")[1] #Splits the Authorization header value by spaces and extracts the actual JWT
+    encoded_jwt = encoded_jwt.split(" ")[1]
 
-    try: # Attempts to decode the JWT
+    try:
         decoded = jwt.decode(
             encoded_jwt, os.environ.get("JWT_SECRET"), algorithms=["HS256"]
         )
@@ -70,44 +57,19 @@ def validate():
     return decoded, 200
 
 
-def createJWT(username, secret, authz): #function that creates a JWT using the provided username, secret key, and authorization flag
-    return jwt.encode( #jwt.encode encodes data below into JWT
+def createJWT(username, secret, authz):
+    return jwt.encode(
         {
             "username": username,
             "exp": datetime.datetime.now(tz=datetime.timezone.utc)
-            + datetime.timedelta(days=1), #expiration time of token, 1 day from now
-            "iat": datetime.datetime.utcnow(), #issued at(iat); time token was issued
-            "admin": authz, #flag indicating whether user is admin. if yes, they has access to all API endpoints
-        },   #will create the endpoint for this auth service to validate jwt
+            + datetime.timedelta(days=1),
+            "iat": datetime.datetime.utcnow(),
+            "admin": authz,
+        },
         secret,
         algorithm="HS256",
     )
 
-#Python idiom used to ensure that certain code is only executed when the script is run directly
 
-if __name__ == "__main__": 
-    #This line checks if the script is being run directly. When this script is run directly, __name__ is set to "__main__". 
-    #When the script is imported as a module, __name__ is set to the name of the script/module.
-    server.run(host="0.0.0.0", port=5000) #whenever we run our program, we want our server to start
-    # The host configuration in Flask determines which IP addresses the application will listen on.
-    # Setting the host to 0.0.0.0 tells Flask to listen on all available IP addresses of the Docker container, including localhost and any other IP addresses assigned by Docker networks.
-    # If not configured, Flask defaults to listening on localhost, which is only accessible from within the container and not from external sources.
-    # If the Docker container is connected to multiple Docker networks, it will have multiple IP addresses. The 0.0.0.0 configuration ensures Flask listens on all of them.
-    # Port=5000 specifies the port number on which the server will listen for incoming requests. 5000 is the default for Flask applications
-
-
-'''
-
-1.User enters their credentials and clicks "Sign In."
-2.Browser sends a POST request to the server.
-3.Server verifies the credentials and generates a JWT.
-4.Server sends the JWT back to the browser.
-5.Browser stores the JWT in local storage or a cookie.
-6.The user tries to access a protected resource (e.g., perform any operation, viewing a profile, accessing a video).
-7.Browser includes the JWT in the Authorization header of the request.
-8.The server extracts the JWT from the header and verifies it.
-9.If the JWT is valid and the user is authorized, the server processes the request and returns the appropriate response.
-10.If server checks the JWT and finds that it has expired, server responds with an error, indicating that user need to log in again.
-
-'''
-
+if __name__ == "__main__":
+    server.run(host="0.0.0.0", port=5000)
