@@ -130,3 +130,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Ignore secret.yaml files
+src/auth/manifests/secret.yaml
+src/converter/manifests/secret.yaml
+src/gateway/manifests/secret.yaml
+src/notification/manifests/secret.yaml
+src/rabbit/manifests/secret.yaml
