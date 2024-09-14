@@ -3,7 +3,6 @@ from pymongo import MongoClient
 import gridfs
 from convert import to_mp3 #package that we are going to create to convert video to mp3
 
-
 def main():
     client = MongoClient("host.minikube.internal", 27017) 
     #MongoDB server runs on local machine, and the consumer service connects to it using the hostname host.minikube.internal.
@@ -29,8 +28,14 @@ def main():
             ch.basic_ack(delivery_tag=method.delivery_tag)
 
     #configuration to consume messages from the VIDEO_QUEUE. The queue name is retrieved from an environment variable.
+    video_queue = os.environ.get("VIDEO_QUEUE")
+    print(f"VIDEO_QUEUE: {video_queue}")  # Debugging statement
+
+    if not video_queue:
+        raise ValueError("VIDEO_QUEUE environment variable is not set")
+
     channel.basic_consume(
-        queue=os.environ.get("VIDEO_QUEUE"), on_message_callback=callback #The consumer service starts listening for messages and processes them using the callback function. 
+        queue=video_queue, on_message_callback=callback #The consumer service starts listening for messages and processes them using the callback function. 
     )
 
     print("Waiting for messages. To exit press CTRL+C") #starts the consumer, which continuously listen for messages on the queue and process using callback function
