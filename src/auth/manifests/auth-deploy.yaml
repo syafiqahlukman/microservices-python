@@ -1,29 +1,29 @@
-apiVersion: apps/v1 # specify the kubernetes API version
-kind: Deployment # specify the kind of resource/object type (Deployment)
-metadata: # data that helps uniquely identify the object
+apiVersion: apps/v1
+kind: Deployment
+metadata:
   name: auth
   labels:
     app: auth
-spec: # describe the desired state of the object - Deployment
-  replicas: 2 # 2 copies (replicas) of the auth service running at the same time (for load balancing) if one pod fails, another is still running.
-  selector: # to identify which pods belong to this deployment. It matches pods with the label app: auth.
+spec:
+  replicas: 2
+  selector:
     matchLabels:
       app: auth
-  strategy: # deployment strategy to replace existing pods with new ones
-    type: RollingUpdate # rolling update is a way to update the microservice without downtime. it gradually replace old pods with new ones
+  strategy:
+    type: RollingUpdate
     rollingUpdate:
-      maxSurge: 3 # allows up to 3 extra pods to be created temporarily during the update (must be more than replicas)
-  template: # pod template. pod is the environment where the microservice runs. this template defines what the pod should look like (e.g what containers it should run)
+      maxSurge: 3
+  template:
     metadata:
       labels:
         app: auth
-    spec: # the pod's spec
+    spec:
       containers:
         - name: auth
-          image: syafiqahlukman/auth
+          image: syafiqahlukman/auth:latest
           ports:
             - containerPort: 5000
-          envFrom: # environment variables from configMap and secret files
+          envFrom:
             - configMapRef:
                 name: auth-configmap
             - secretRef:
