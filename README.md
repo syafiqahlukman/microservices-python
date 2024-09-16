@@ -102,6 +102,8 @@ The server checks the token to see what you are allowed to do. For example, if y
     -   The default exchange is a direct exchange with no name (empty string).
     -   Every queue created is automatically bound to the default exchange with a routing key that matches the queue name.
 
+
+
 ### Message Routing
 
 1.  **Routing Key**:
