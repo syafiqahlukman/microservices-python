@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: converter
-          image: syafiqahlukman/converter
+          image: syafiqahlukman/converter:latest
           envFrom:
             - configMapRef:
                 name: converter-configmap
