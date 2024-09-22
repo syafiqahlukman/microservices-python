@@ -20,7 +20,7 @@ spec: #defines desired state of deployment
     spec:
       containers:
         - name: gateway
-          image: syafiqahlukman/gateway
+          image: syafiqahlukman/gateway:latest
           envFrom:
             - configMapRef:
                 name: gateway-configmap

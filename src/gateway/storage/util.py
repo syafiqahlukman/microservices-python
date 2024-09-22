@@ -1,29 +1,37 @@
-import pika, json #pika is python library for interacting with RabbitMQ, json is python library for JSON
+import pika, json
+import logging
 
-#The upload function takes a file object, stores it in mongodb db using gridfs db, sends message through RabbitMQ channel, and an access object to know information about who is uploading the file as arguments
-def upload(f, fs, channel, access): 
+logging.basicConfig(level=logging.DEBUG)
+
+def upload(f, fs, channel, access):
     try:
-        fid = fs.put(f) #tries to upload the file in the mongodb using gridfs, if the put successful, it returns the fid,(unique id of the file)
+        logging.debug("Attempting to upload file to GridFS")
+        fid = fs.put(f)
+        logging.debug(f"File uploaded to GridFS with id: {fid}")
     except Exception as err:
-        print(err)
+        logging.error(f"Error uploading file to GridFS: {err}")
         return "internal server error", 500
 
-    message = { #message that we want to put in the queue. the message equal to dictionary with the fid of the file, the username (came from access from auth service) of the user who uploaded the file, and the mp3_fid set to None which is empty for now
+    message = {
         "video_fid": str(fid),
         "mp3_fid": None,
         "username": access["username"],
     }
 
-    try: #the function tries to put the message to the RabbitMQ queue
-        channel.basic_publish( #if it works, the function publishes the message to the RabbitMQ server with the message dictionary as the body
-            exchange="", #use default exchange
+    try:
+        logging.debug("Attempting to publish message to RabbitMQ")
+        channel.basic_publish(
+            exchange="",
             routing_key="video",
             body=json.dumps(message),
             properties=pika.BasicProperties(
                 delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE
             ),
         )
-    except Exception as err: #if something goes wrong, the function prints the error and deletes the file from the GridFS storage system (db)
-        print(err)
+        logging.debug("Message published to RabbitMQ")
+    except Exception as err:
+        logging.error(f"Error publishing message to RabbitMQ: {err}")
         fs.delete(fid)
         return "internal server error", 500
+
+    return "file uploaded successfully", 200
